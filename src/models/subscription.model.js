@@ -12,3 +12,5 @@ const subscriptionSchema = new Schema({
 }, {timestamps: true})
 
 export const Subscription = new mongoose.model('Subscription', subscriptionSchema)
+
+/// whenever a user will subscribe a channel a document wil be created. 

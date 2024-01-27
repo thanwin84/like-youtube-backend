@@ -331,6 +331,7 @@ const updateAvatar = asyncHandler(async (req, res)=>{
         "Avatar has been updated successfully"
     ))
 })
+
 const updateCoverImage = asyncHandler(async (req, res)=>{
     // delete the existing image from cloudinary
     // then upload the update image
@@ -368,6 +369,7 @@ const updateCoverImage = asyncHandler(async (req, res)=>{
         "Cover Image  has been updated successfully"
     ))
 })
+
 const deleteAssetInTheBackground = async (publicId)=>{
     try {
         await deleteAsset(publicId)
@@ -375,6 +377,10 @@ const deleteAssetInTheBackground = async (publicId)=>{
         console.log("old photo could not delete!")
     }
 }
+
+const getChannelProfile = asyncHandler(async (req, res)=>{
+
+})
 export {
     registerUser,
     loginUser,
@@ -384,6 +390,7 @@ export {
     getCurrentUser,
     updateAccountDetails,
     updateAvatar,
-    updateCoverImage
+    updateCoverImage,
+    getChannelProfile
 
 }
