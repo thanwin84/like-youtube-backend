@@ -5,7 +5,9 @@ import {
     publishAVideo,
     getlAllVideos,
     getVideoById,
-    deleteVideo
+    deleteVideo,
+    updateVideo,
+    togglePublishStatus
 } from '../controllers/video.controller.js'
 const router = Router()
 
@@ -26,5 +28,6 @@ router.route('/')
 router.route('/:videoId')
 .get(getVideoById)
 .delete(deleteVideo)
-
+.put(upload.single('videoFile'), updateVideo)
+.post(togglePublishStatus)
 export default router

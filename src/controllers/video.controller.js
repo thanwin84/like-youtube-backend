@@ -106,6 +106,38 @@ const getVideoById = asyncHandler(async (req, res)=>{
 const updateVideo = asyncHandler(async (req, res)=>{
     const {videoId} = req.params
     
+    if (!videoId){
+        throw new ApiError(400, "videoId is required")
+    }
+    
+    const video = await Video.findById(videoId)
+    if (!video){
+        throw new ApiError(404, "Video is not found with this videoId")
+    }
+    
+
+    const localVideoPath = req.file?.path
+    if (!localVideoPath){
+        throw new ApiError(400, "Video file is missing")
+    }
+    const updatedVideo = await uploadOnCloudinary(localVideoPath)
+    if (!updatedVideo){
+        throw new ApiError(500, "something went wrong while updating the video")
+    }
+    video.videoFile[0] = updatedVideo.url
+    video.videoFile[1] = updatedVideo.public_id
+    video.save()
+    // also delete the old video
+    await deleteAsset(video.videoFile[1])
+    
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200,
+        video,
+        "Video has been updated"
+    ))
+
 })
 
 const deleteVideo = asyncHandler(async (req, res)=>{
@@ -137,6 +169,22 @@ const deleteVideo = asyncHandler(async (req, res)=>{
 
 const togglePublishStatus = asyncHandler(async (req, res)=>{
     const {videoId} = req.params
+    if (!videoId){
+        throw new ApiError(400, "video ID is missing")
+    }
+    const video = await Video.findById(videoId)
+    if (!video){
+        throw new ApiError(404, "Video is not found with this Id")
+    }
+    video.isPublished = !video.isPublished
+    video.save()
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200,
+        video,
+        `publish status is turned to ${video.isPublished ? "true ": "false"}`
+    ))
 })
 
 export {
