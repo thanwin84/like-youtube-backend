@@ -28,6 +28,7 @@ router.route('/')
 router.route('/:videoId')
 .get(getVideoById)
 .delete(deleteVideo)
-.put(upload.single('videoFile'), updateVideo)
-.post(togglePublishStatus)
+.patch(upload.single('videoFile'), updateVideo)
+
+router.route('/toggle-publish-status/:videoId').patch(togglePublishStatus)
 export default router
