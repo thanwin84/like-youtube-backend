@@ -5,12 +5,10 @@ const playlistSchema = new Schema(
         name: {
             type: String,
             required: true,
-            trim: true,
-            lowercase: true
+            trim: true
         },
         description: {
             type: String,
-            lowercase: true,
             trim: true
         },
         videos:[
