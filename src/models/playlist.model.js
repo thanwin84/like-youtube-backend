@@ -9,7 +9,6 @@ const playlistSchema = new Schema(
         },
         description: {
             type: String,
-            trim: true
         },
         videos:[
             {
