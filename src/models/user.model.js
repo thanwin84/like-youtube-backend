@@ -2,10 +2,20 @@ import mongoose, {Schema} from "mongoose"
 import jwt from "jsonwebtoken"
 import bcrypt from 'bcrypt'
 import {generateKeypair, getKey} from '../utils/keypairs.js'
-import { asyncHandler } from "../utils/asyncHandler.js"
-import ApiError from "../utils/ApiError.js"
 
- 
+
+const watchedVideoSchema = new Schema({
+    videoId: {
+        type: Schema.Types.ObjectId,
+        ref: "Video",
+        required: true
+    },
+    ownerId: {
+        type: Schema.Types.ObjectId,
+        ref: "user"
+    }
+})
+
 const userSchema = new Schema({
     username: {
         type: String,
@@ -37,12 +47,7 @@ const userSchema = new Schema({
     coverImage: {
         type: [String], //cloudinary url - coverImage: [url, publicId]
     },
-    watchHistory: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: "Video"
-        }
-    ],
+    watchHistory: [watchedVideoSchema],
     password: {
         type: String,
         required: [true, "Password is required"]

@@ -186,13 +186,40 @@ const togglePublishStatus = asyncHandler(async (req, res)=>{
         `publish status is turned to ${video.isPublished ? "true ": "false"}`
     ))
 })
+const addVideoToUserWatchList = asyncHandler(async (req, res)=>{
+    const {videoId} = req.params
+    if (!videoId){
+        throw new ApiError("video id  is missing")
+    }
+    const video = await Video.findById(videoId)
+    try {
+        const result = await User.findOneAndUpdate(
+            {_id: req.user._id}, 
+            {
+                $push: {"watchHistory": {videoId: video._id, ownerId: video.owner}}
+            },
+            {new: true}
+        )
+        return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            result,
+            "video has been added to the watch history"
+        ))
+    } catch (error) {
+        console.log(error)
+        throw new ApiError(500, "something went wrong while updating video to watchList")
+    }
 
+})
 export {
     getVideoById,
     getlAllVideos,
     publishAVideo,
     updateVideo,
     deleteVideo,
-    togglePublishStatus
+    togglePublishStatus,
+    addVideoToUserWatchList
     
 }

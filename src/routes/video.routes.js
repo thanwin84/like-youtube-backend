@@ -7,7 +7,8 @@ import {
     getVideoById,
     deleteVideo,
     updateVideo,
-    togglePublishStatus
+    togglePublishStatus,
+    addVideoToUserWatchList
 } from '../controllers/video.controller.js'
 const router = Router()
 
@@ -29,6 +30,8 @@ router.route('/:videoId')
 .get(getVideoById)
 .delete(deleteVideo)
 .patch(upload.single('videoFile'), updateVideo)
+
+router.route("/add-to-watchHistory/:videoId").post(addVideoToUserWatchList)
 
 router.route('/toggle-publish-status/:videoId').patch(togglePublishStatus)
 export default router

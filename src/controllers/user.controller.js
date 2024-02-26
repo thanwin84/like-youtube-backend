@@ -452,63 +452,53 @@ const getChannelProfile = asyncHandler(async (req, res)=>{
 
 // need testing
 const getWatchHistory = asyncHandler(async (req, res)=>{
-    const user = await User.aggregate(
-        [
-            {
-              $match: {
-                _id: new mongoose.Types.ObjectId(req.user._id)
-              }
-            },
-            {
-              $lookup: {
-                from: "videos",
-                localField: "watchHistory",
-                foreignField: "_id",
-                as: "watchHistory",
-                pipeline: [
-                  {
-                    $lookup: {
-                      from: "users",
-                      localField: "owner",
-                      foreignField: "_id",
-                            as: "owner",
-                      pipeline: [
-                        {
-                          $project: {
-                            fullName: 1,
-                            username: 1,
-                            avatar: 1
-                          }
-                        },
-                        
-                      ]
-                    }
-                  },
-                  {
-                    $addFields: {
-                      "owner": {
-                        $first: "$owner"
-                      }
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              $project: {
-                _id: 0,
-                password: 0,
-                refreshToken: 0
-              }
-            }
-          ]
-    )
+    const watchHistoryPipeline = 
+    [
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(req.user._id)
+        }
+      },
+      {
+        $unwind: "$watchHistory"
+      },
+      {
+        $addFields: {
+          videoId: "$watchHistory.videoId"
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          videoId: 1
+        }
+      },
+      {
+        $lookup: {
+          from: "videos",
+          localField: "videoId",
+          foreignField: "_id",
+          as: "video"
+        }
+      },
+      {
+        $addFields: {
+          video: {$first: "$video"}
+        }
+      },
+      {
+        $project: {
+          video: 1
+        }
+      }
+    ]
+    const watchHistory = await User.aggregate(watchHistoryPipeline)
 
     return res
     .status(200)
     .json(new ApiResponse(
         200,
-        user[0].watchHistory,
+        watchHistory,
         "Watch history is fetched successfully"
     ))
 })
